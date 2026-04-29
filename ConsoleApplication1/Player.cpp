@@ -4,18 +4,17 @@
 anim a;
 //------------------------------------- Player -------------------------------------------------------//
 void playerinfo(player& p) {
-    p.body.setSize(Vector2f(50.f, 50.f));
+    p.body.setSize(Vector2f(28.f, 28.f)); //Character Size
     p.body.setFillColor(Color::Transparent);
     p.body.setOutlineThickness(0.25);
     p.body.setOutlineColor(Color::Green);
-    p.body.setPosition(900.f, 1000.f);
-
+    p.body.setPosition(390.f, 500.f);
     p.velocity = Vector2f(0.f, 0.f);
-    p.gravity = 3500.f;
-    p.movespeed = 2500.f;
+    p.gravity = 2600.f;
+    p.movespeed = 3200.f;
     p.jumppower = -700.f;
-    p.maxspeed = 850.f;
-    p.friction = 0.97f;
+    p.maxspeed = 700.f;
+    p.friction = 0.90f;
     p.isonground = false;
     p.jumphold = false;
 }
@@ -48,7 +47,7 @@ void playermovement(player& p, float dt)
         speedFactor = min(speedFactor, 1.f);
         float jumpBoost = 1.f + speedFactor * 0.8f;
         if (p.lastland < 0.15f) {
-            jumpBoost *= 2.f;     // jumpboost
+            jumpBoost *= 1.2f;     // jumpboost
         }
         p.velocity.y = p.jumppower * jumpBoost;
         p.isonground = false;
@@ -69,8 +68,8 @@ void playerphysics(player& p, float dt)
     if (p.velocity.y > 0)
         p.velocity.y += p.gravity * 1.2f * dt;
 
-    if (p.velocity.y > 1200.f)
-        p.velocity.y = 1200.f;
+    if (p.velocity.y > 950.f)
+        p.velocity.y = 950.f;
 }
 
 //--------------------------------
@@ -90,38 +89,48 @@ void playerdraw(player& p, RenderWindow& window) {
 void collision(player& p, Platform platforms[]) {
 
     p.isonground = false;
-
-    // walls
-    if (p.body.getPosition().x < 190.5)
+    float playerW = p.body.getGlobalBounds().width;
+    float playerH = p.body.getGlobalBounds().height;
+    float px = p.body.getPosition().x;
+    float py = p.body.getPosition().y;
+    /////// walls
+    if (px < 90)
     {
-        p.body.setPosition(190.5, p.body.getPosition().y);
-        p.velocity.x *= -0.5f;
+        p.body.setPosition(90.f, py);
+        p.velocity.x = fabs(p.velocity.x) * 0.8f; // gets a little push
     }
 
-    if (p.body.getPosition().x + p.body.getGlobalBounds().width > 1721)
+    if (px + playerW > 710.f)
     {
-        p.body.setPosition(1721 - p.body.getGlobalBounds().width, p.body.getPosition().y);
-        p.velocity.x *= -0.5f;
+        p.body.setPosition(710.f - playerW, py);
+        p.velocity.x = -fabs(p.velocity.x) * 0.8f; //gets a little push
     }
-    // ground
-    if (p.body.getPosition().y + p.body.getGlobalBounds().height > 1050) {
-        p.body.setPosition(p.body.getPosition().x, 1050 - p.body.getGlobalBounds().height);
+    /////////////////ground
+    if (py + playerH > 570) {
+        p.body.setPosition(px, 570 - playerH);
         p.velocity.y = 0;
         p.isonground = true;
     }
 
-    // platforms
-    for (int i = 0; i < PLATFORM_COUNT; i++)
-    {
-        if (p.velocity.y > 0 && p.body.getGlobalBounds().intersects(platforms[i].sprite.getGlobalBounds()))
-        {
-            p.body.setPosition(
-                p.body.getPosition().x, platforms[i].sprite.getPosition().y - p.body.getSize().y);
-            p.justlanded = true;
-            p.lastland = 0.f;
 
-            p.velocity.y = 0;
-            p.isonground = true;
+    // platforms
+    if (p.velocity.y >= 0)
+    {
+        FloatRect feet(px + 4.f, py + playerH - 2.f, playerW - 8.f, 6.f);
+        for (int i = 0; i < PLATFORM_COUNT; i++)
+        {
+            FloatRect plat = platforms[i].sprite.getGlobalBounds();
+
+            if (feet.intersects(plat))
+            {
+                p.body.setPosition(p.body.getPosition().x, plat.top - playerH + 1.f);
+
+                p.velocity.y = 0;
+                p.isonground = true;
+                p.justlanded = true;
+                p.lastland = 0.f;
+                break;
+            }
         }
     }
 }
@@ -138,8 +147,9 @@ void start(anim& g) {
 
     g.mary.setTexture(g.idle); // مهم
 
-    g.mary.setOrigin(49.f / 2.f, 61.f);
-    g.mary.setScale(2.f, 2.f);
+    g.mary.setOrigin(24.f, 28.f);
+    g.mary.setScale(1.6f, 1.6f);
+    g.mary.setRotation(0.f);
 
     g.animTimer = 0;
     g.animSpeed = 0.12f;
@@ -192,11 +202,11 @@ void update(anim& g, player& p, float dt) {
 
         g.animTimer = 0;
     }
-    if (p.velocity.x < -0.1f) {
-        g.mary.setScale(-2.f, 2.f); //وشه الناحية التانية
-    }
-    else if (p.velocity.x > 0.1f) {
-        g.mary.setScale(2.f, 2.f);
-    }
-    g.mary.setPosition(p.body.getPosition().x + 25, p.body.getPosition().y + 48);
+    const float PLAYER_SCALE = 1.6f;
+
+    if (p.velocity.x < -0.1f)
+        g.mary.setScale(-PLAYER_SCALE, PLAYER_SCALE);
+    else
+        g.mary.setScale(PLAYER_SCALE, PLAYER_SCALE);
+    g.mary.setPosition(p.body.getPosition().x, p.body.getPosition().y - 10);
 }

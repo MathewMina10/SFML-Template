@@ -7,12 +7,13 @@
 #include<SFML/System.hpp>
 using namespace std;
 using namespace sf;
-const int PLATFORM_COUNT = 200;
+const int PLATFORM_COUNT = 100;
 struct Platform
 {
 	Sprite sprite;
 };
-extern Platform platform[PLATFORM_COUNT];
-void background(Sprite& backgroundSprite, Texture& backgroundTexture, RenderWindow& window);
-void wallssprite(Sprite& leftWall, Sprite& rightWall, Texture& leftwalltexture, Texture& rightwallTexture, RenderWindow& window, float& widthWall);
-void platformsTextures(Platform platforms[], int count, Texture& platformTexture, float wallWidth, RenderWindow& window);
+//-------------------------------------------------------  FUNCTIONS------------------------------------------------------------// 
+void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth);
+void initWalls(Texture& wallTexture, Sprite& leftWall, Sprite& rightWall, float windowWidth, float windowHeight);
+void initFloor(Texture& floorTexture, Sprite& floor, float windowWidth, float windowHeight);
+void initPlatforms(Platform platforms[], Texture& platformTexture, float windowW);
