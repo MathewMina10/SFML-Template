@@ -19,6 +19,7 @@ struct player
     bool isonground;
     bool justlanded;
     bool jumphold;
+    bool gamestarted;
     float dt;
     float maxspeed = 0;
     float friction = 0;

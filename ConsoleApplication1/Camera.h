@@ -9,13 +9,14 @@ using namespace sf;
 struct Camera
 {
     View view;
-
+    float basespeed;
+    float maxcameraspeed;
+    float startY;
     float highestY;
     float offsetY;
     float cameraSpeed;
     float deadZone;
-
+    bool gamestarted;
     void camera_stuff(float width, float height);
-
-    void camera_control(float playerY);
+    void camera_control(float playerY, float dt);
 };
