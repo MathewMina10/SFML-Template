@@ -11,7 +11,7 @@ void playerinfo(player& p) {
     p.body.setPosition(390.f, 500.f);
     p.velocity = Vector2f(0.f, 0.f);
     p.gravity = 2600.f;
-    p.movespeed = 3200.f;
+    p.movespeed = 2900.f;
     p.jumppower = -700.f;
     p.maxspeed = 700.f;
     p.friction = 0.90f;
