@@ -104,7 +104,7 @@ void initPlatforms(Platform platforms[], Texture& platformTexture, float windowW
 
         x = max(wallWidth, min(x, windowW - wallWidth - platformWidth));
 
-        float y = 900 - i * verticalSpacing;
+        float y = 450 - i * verticalSpacing;
 
         platforms[i].sprite.setPosition(x, y);
 

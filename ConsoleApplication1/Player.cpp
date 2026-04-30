@@ -8,7 +8,7 @@ void playerinfo(player& p) {
     p.body.setFillColor(Color::Transparent);
     p.body.setOutlineThickness(0.25);
     p.body.setOutlineColor(Color::Green);
-    p.body.setPosition(390.f, 500.f);
+    p.body.setPosition(390.f, 540.f);
     p.velocity = Vector2f(0.f, 0.f);
     p.gravity = 2600.f;
     p.movespeed = 2900.f;
