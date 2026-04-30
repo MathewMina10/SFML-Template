@@ -28,7 +28,7 @@ int main()
     Menu menu(windowWidth, windowHeight);
 
     // ================= MUSIC =================
-    if (!bgMusic.openFromFile("ori music.ogg")) // ✔️ check
+    if (!bgMusic.openFromFile("ori music.ogg"))
         cout << "Music error\n";
 
     bgMusic.setLoop(true);
@@ -37,7 +37,7 @@ int main()
 
     // ================= FONT =================
     Font font;
-    if (!font.loadFromFile("HalloweenSlimePersonalUse-4B80D.otf")) // ✔️ check
+    if (!font.loadFromFile("HalloweenSlimePersonalUse-4B80D.otf"))
         cout << "Font error\n";
 
     // ================= LEVELS =================
@@ -78,6 +78,10 @@ int main()
             // ================= MENU =================
             if (state == MENU)
             {
+                if (bgMusic.getStatus() != sf::Music::Playing)
+                {
+                    bgMusic.play(); // to make the music starts again
+                }
                 menu.HandleInput(event);
 
                 if (menu.isPlaySelected())
@@ -120,6 +124,7 @@ int main()
                     if (event.key.code == Keyboard::Enter)
                     {
                         menu.playClick();
+                        bgMusic.stop(); // stop music 
                         state = GAME;
                     }
 
@@ -160,7 +165,6 @@ int main()
             }
         }
 
-        // ✔️ update برا event loop
         bgMusic.setVolume(menu.getMusic());
 
         // ================= DRAW =================
@@ -186,8 +190,16 @@ int main()
         }
         else if (state == GAME)
         {
-            rungame(window);
-            state = MENU;
+            int result = rungame(window);
+
+            if (result == 1) // RESTART
+            {
+                state = GAME;
+            }
+            else
+            {
+                state = MENU;
+            }
         }
         else if (state == OPTIONS)
         {

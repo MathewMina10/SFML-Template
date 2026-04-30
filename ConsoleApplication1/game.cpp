@@ -4,13 +4,18 @@
 #include "player.h"
 #include "Platforms.h"
 #include "Camera.h"
+#include "Menu.h"
 #include <SFML/Graphics.hpp>
 #include<SFML/Window.hpp>
 #include<SFML/System.hpp>
 using namespace std;
 using namespace sf;
-void rungame(RenderWindow& window) {
+const int back_to_menu = 0;
+const int restart = 1;
+int selecteditem = 0;
+int rungame(RenderWindow& window) {
     bool ispaused = false;
+    bool isdead = false;
     const float windowWidth = 800;
     const float windowHeight = 600;
 
@@ -46,12 +51,43 @@ void rungame(RenderWindow& window) {
     initPlatforms(platformlist, platformTexture, windowWidth);
     initFloor(floorTexture, floor, windowWidth, windowHeight); //first floor
     Clock clock;
+
+    /////// Death menu 
+    Texture deathTexture;
+    deathTexture.loadFromFile("entername (1).png");
+
+    Sprite deathSprite;
+    deathSprite.setTexture(deathTexture);
+    deathSprite.setPosition(200, 100);
+
+    Font font;
+    font.loadFromFile("HalloweenSlimePersonalUse-4B80D.otf");
+
+    Text playAgain, mainMenu;
+
+    playAgain.setFont(font);
+    playAgain.setString("Play Again");
+    playAgain.setCharacterSize(30);
+    playAgain.setPosition(300, 150);
+
+    mainMenu.setFont(font);
+    mainMenu.setString("Main Menu");
+    mainMenu.setCharacterSize(30);
+    mainMenu.setPosition(300, 230);
+
+    // music inside the game 
+    Music gameMusic;
+    gameMusic.openFromFile("backgmusic.ogg"); //game music
+    gameMusic.play();
+    gameMusic.setLoop(true);
+
+
     //game loop
     bool running = true;
     while (running)
     {
         //deltatime
-        if (!ispaused) {
+        if (!ispaused && !isdead) {
             p.dt = clock.restart().asSeconds();
             p.lastland += p.dt;
         }
@@ -66,7 +102,7 @@ void rungame(RenderWindow& window) {
                 running = false;
             }
             if (event.type == Event::KeyPressed) {
-                if (!ispaused) {
+                if (!ispaused && !isdead) {
                     if (event.key.code == Keyboard::Escape)
                         ispaused = true; //first ESC ---> pause 
                 }
@@ -78,9 +114,41 @@ void rungame(RenderWindow& window) {
                 }
 
             }
+            // death menu
+            if (isdead && event.type == Event::KeyPressed)
+            {
+                if (event.key.code == Keyboard::Up)
+                {
+                    selecteditem--;
+                    if (selecteditem < 0)
+                        selecteditem = 1;
+                }
+
+                if (event.key.code == Keyboard::Down)
+                {
+                    selecteditem++;
+                    if (selecteditem > 1)
+                        selecteditem = 0;
+                }
+
+                if (event.key.code == Keyboard::Enter)
+                {
+                    if (selecteditem == 0)
+                        return restart;
+
+                    if (selecteditem == 1)
+                        return back_to_menu;
+                }
+            }
         }
+
+
+
+
+
+
         //Update
-        if (!ispaused) {
+        if (!ispaused && !isdead) {
             playermovement(p, p.dt);
             playerphysics(p, p.dt);
             playermove(p, p.dt);
@@ -91,17 +159,28 @@ void rungame(RenderWindow& window) {
         //Platforms 
 
         //camera stuff
-        if (!ispaused)
+        if (!ispaused && !isdead)
             camera.camera_control(p.body.getPosition().y, p.dt);
         float cameraBottom = camera.view.getCenter().y + 300.f;
-        if (!ispaused) {
+        if (!ispaused && !isdead) {
             if (p.body.getPosition().y > cameraBottom + 50.f)
             {
-                running = false; // the game is over 
+                isdead = true; // the game is over
+                selecteditem = 0;
             }
         }
 
-        // 
+        // death menu
+        if (selecteditem == 0)
+        {
+            playAgain.setFillColor(Color::Yellow);
+            mainMenu.setFillColor(Color::Black);
+        }
+        else
+        {
+            playAgain.setFillColor(Color::Black);
+            mainMenu.setFillColor(Color::Yellow);
+        }
         //Render
         window.clear();
         window.setView(window.getDefaultView());
@@ -170,7 +249,16 @@ void rungame(RenderWindow& window) {
 
             window.draw(pauseText);
         }
+        ///////////////death menu
+        if (isdead)
+        {
+            window.setView(window.getDefaultView());
+            window.draw(deathSprite);
+            window.draw(playAgain);
+            window.draw(mainMenu);
+        }
         window.display();
     }
     // end of application
+    return back_to_menu;
 }

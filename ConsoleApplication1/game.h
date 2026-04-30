@@ -10,5 +10,4 @@
 using namespace std;
 using namespace sf;
 
-void rungame(sf::RenderWindow& window);
-
+int rungame(sf::RenderWindow& window);
