@@ -11,6 +11,7 @@ const int PLATFORM_COUNT = 100;
 struct Platform
 {
 	Sprite sprite;
+	bool counted = false; // for platforms that passed 
 };
 //-------------------------------------------------------  FUNCTIONS------------------------------------------------------------// 
 void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth);

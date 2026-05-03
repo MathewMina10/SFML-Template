@@ -11,6 +11,7 @@ struct player
 {
     RectangleShape body;
     Vector2f velocity;
+    int platformspassed;
     float gravity;
     float movespeed;
     float jumppower;
@@ -20,6 +21,7 @@ struct player
     bool justlanded;
     bool jumphold;
     bool gamestarted;
+    bool inair;
     float dt;
     float maxspeed = 0;
     float friction = 0;
