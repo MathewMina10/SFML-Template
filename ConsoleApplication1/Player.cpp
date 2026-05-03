@@ -1,5 +1,6 @@
 ﻿#include "player.h"
 #include "Platforms.h"
+#include"Score.h"
 #include <cmath>
 anim a;
 //------------------------------------- Player -------------------------------------------------------//
@@ -17,6 +18,8 @@ void playerinfo(player& p) {
     p.friction = 0.90f;
     p.isonground = false;
     p.jumphold = false;
+    p.inair = true;
+    p.platformspassed = 0;
 }
 
 //--------------------------------
@@ -53,6 +56,7 @@ void playermovement(player& p, float dt)
         p.isonground = false;
         p.justlanded = false;
         a.isjumping = true;
+        p.platformspassed = 0;
     }
 }
 
@@ -70,6 +74,10 @@ void playerphysics(player& p, float dt)
 
     if (p.velocity.y > 950.f)
         p.velocity.y = 950.f;
+    if (!p.isonground)
+    {
+        p.inair = true;
+    }
 }
 
 //--------------------------------
@@ -120,6 +128,17 @@ void collision(player& p, Platform platforms[]) {
         for (int i = 0; i < PLATFORM_COUNT; i++)
         {
             FloatRect plat = platforms[i].sprite.getGlobalBounds();
+            if (p.inair && !platforms[i].counted)
+            {
+                if (p.body.getPosition().y < plat.top)
+                {
+                    p.platformspassed++;
+                    platforms[i].counted = true;
+                }
+            }
+
+
+
 
             if (feet.intersects(plat))
             {
@@ -127,8 +146,14 @@ void collision(player& p, Platform platforms[]) {
 
                 p.velocity.y = 0;
                 p.isonground = true;
-                p.justlanded = true;
-                p.lastland = 0.f;
+
+                if (p.inair)
+                {
+                    p.justlanded = true;
+                    p.lastland = 0.f;
+                }
+
+                p.inair = false;
                 break;
             }
         }

@@ -5,6 +5,7 @@
 #include "Platforms.h"
 #include "Camera.h"
 #include "Menu.h"
+#include "Score.h"
 #include <SFML/Graphics.hpp>
 #include<SFML/Window.hpp>
 #include<SFML/System.hpp>
@@ -18,8 +19,9 @@ int rungame(RenderWindow& window) {
     bool isdead = false;
     const float windowWidth = 800;
     const float windowHeight = 600;
-
-
+    //score
+    ScoreSystem score;
+    score.init();
     RenderTexture blurtexture;
     blurtexture.create(windowWidth, windowHeight); // blur for pause menu
     Sprite blursprite;
@@ -144,16 +146,21 @@ int rungame(RenderWindow& window) {
 
 
 
-
-
-
         //Update
         if (!ispaused && !isdead) {
             playermovement(p, p.dt);
             playerphysics(p, p.dt);
             playermove(p, p.dt);
             collision(p, platformlist);
+            if (p.justlanded)
+            {
+                score.addcombo(p.platformspassed);
+                p.platformspassed = 0;
+                p.justlanded = false;
+            }
             update(a, p, p.dt);
+            score.update(p.body.getPosition().y);
+
         }
 
         //Platforms 
@@ -257,6 +264,9 @@ int rungame(RenderWindow& window) {
             window.draw(playAgain);
             window.draw(mainMenu);
         }
+        //////score draw
+        window.setView(window.getDefaultView());
+        score.draw(window);
         window.display();
     }
     // end of application
