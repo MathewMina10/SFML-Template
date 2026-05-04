@@ -12,6 +12,7 @@ struct player
     RectangleShape body;
     Vector2f velocity;
     int platformspassed;
+    int lastplatformindex;
     float gravity;
     float movespeed;
     float jumppower;

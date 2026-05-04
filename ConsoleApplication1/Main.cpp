@@ -13,16 +13,42 @@
 
 using namespace sf;
 using namespace std;
-
 enum GameState { MENU, LEVELS, GAME, OPTIONS };
+
 float windowWidth = 800.0f;
 float windowHeight = 600.0f;
+int currentLevel = 0;
+
 sf::Music bgMusic;
 
 int main()
 {
-    RenderWindow window(VideoMode(windowWidth, windowHeight), "Icy Tower", Style::Titlebar | Style::Close | Style::Resize);
+    RenderWindow window(VideoMode(windowWidth, windowHeight),
+        "Icy Tower",
+        Style::Titlebar | Style::Close | Style::Resize);
+
     window.setKeyRepeatEnabled(false);
+
+    // ================= IMAGE (Texture & Sprite) =================
+    sf::Texture texture;
+    sf::Sprite sprite;
+
+    if (!texture.loadFromFile("heads.png"))
+        cout << "Image error\n";
+
+    sprite.setTexture(texture);
+
+    // Animation setup
+    int currentFrame = 0;
+    int totalFrames = 3;
+    float frameWidth = 211.f;
+    float frameHeight = 258.f;
+
+    sf::Clock animationClock;
+    float animationSpeed = 0.3f;
+
+    sprite.setTextureRect(IntRect(0, 0, (int)frameWidth, (int)frameHeight));
+    sprite.setPosition(500.f, 50.f);
 
     // ================= MENU =================
     Menu menu(windowWidth, windowHeight);
@@ -65,6 +91,7 @@ int main()
     // ================= STATE =================
     GameState state = MENU;
 
+    // ================= GAME LOOP =================
     while (window.isOpen())
     {
         Event event;
@@ -79,9 +106,8 @@ int main()
             if (state == MENU)
             {
                 if (bgMusic.getStatus() != sf::Music::Playing)
-                {
-                    bgMusic.play(); // to make the music starts again
-                }
+                    bgMusic.play();
+
                 menu.HandleInput(event);
 
                 if (menu.isPlaySelected())
@@ -91,14 +117,10 @@ int main()
                 }
 
                 if (menu.isOptionsOpen())
-                {
                     state = OPTIONS;
-                }
 
                 if (menu.shouldExit())
-                {
                     window.close();
-                }
             }
 
             // ================= LEVELS =================
@@ -124,14 +146,13 @@ int main()
                     if (event.key.code == Keyboard::Enter)
                     {
                         menu.playClick();
-                        bgMusic.stop(); // stop music 
+                        bgMusic.stop();
+                        currentLevel = selectedLevel;
                         state = GAME;
                     }
 
                     if (event.key.code == Keyboard::Escape)
-                    {
                         state = MENU;
-                    }
                 }
             }
 
@@ -157,6 +178,7 @@ int main()
                     menu.resetMenu();
                     state = MENU;
                 }
+
                 if (menu.shouldBackToMenu())
                 {
                     state = MENU;
@@ -167,12 +189,34 @@ int main()
 
         bgMusic.setVolume(menu.getMusic());
 
+        // ================= ANIMATION UPDATE =================
+        if (state == MENU)
+        {
+            if (animationClock.getElapsedTime().asSeconds() > animationSpeed)
+            {
+                currentFrame = (currentFrame + 1) % totalFrames;
+
+                sprite.setTextureRect(IntRect(
+                    currentFrame * (int)frameWidth,
+                    0,
+                    (int)frameWidth,
+                    (int)frameHeight));
+
+                animationClock.restart();
+            }
+        }
+
         // ================= DRAW =================
         window.clear();
 
         if (state == MENU)
         {
             menu.draw(window);
+
+            if (!menu.isInstructionsOpen() && !menu.isOptionsOpen())
+            {
+                window.draw(sprite);
+            }
         }
         else if (state == LEVELS)
         {
@@ -190,16 +234,12 @@ int main()
         }
         else if (state == GAME)
         {
-            int result = rungame(window);
+            int result = rungame(window, currentLevel);
 
-            if (result == 1) // RESTART
-            {
+            if (result == 1)
                 state = GAME;
-            }
             else
-            {
                 state = MENU;
-            }
         }
         else if (state == OPTIONS)
         {

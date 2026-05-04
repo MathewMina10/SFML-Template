@@ -18,5 +18,5 @@ struct Camera
     float deadZone;
     bool gamestarted;
     void camera_stuff(float width, float height);
-    void camera_control(float playerY, float dt);
+    void camera_control(float playerY, float dt, float speedmutliplier);
 };

@@ -19,7 +19,7 @@ void Camera::camera_stuff(float width, float height)
     deadZone = 170.f;
 }
 
-void Camera::camera_control(float playerY, float dt)
+void Camera::camera_control(float playerY, float dt, float speedmultiplier)
 {
     float currentY = view.getCenter().y;
 
@@ -32,13 +32,13 @@ void Camera::camera_control(float playerY, float dt)
 
     if (gamestarted)
     {
-        currentY -= cameraSpeed * dt;
+        currentY -= cameraSpeed * speedmultiplier * dt;
     }
 
     if (playerY < triggerLine)
     {
         float targetY = playerY + deadZone;
-        currentY += (targetY - currentY) * 5.f * dt;
+        currentY += (targetY - currentY) * 5.f * speedmultiplier * dt;
     }
     if (playerY < highestY)
     {
