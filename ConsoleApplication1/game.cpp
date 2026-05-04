@@ -19,6 +19,8 @@ Text finalhighscoretext;
 float deathtimer = 0.f;
 bool showmenu = false;
 player p;
+//=====================================================================Game Main File====================================================================//
+
 float speedmultiplier = 1.f;
 int rungame(RenderWindow& window, int level) {
     Texture backgroundTexture;
@@ -81,6 +83,7 @@ int rungame(RenderWindow& window, int level) {
     player p;
     camera.camera_stuff(windowWidth, windowHeight);
     playerinfo(p);
+    loadSounds(p);
 
     // background
     Sprite backgroundSprite, leftWall, rightWall, floor;
@@ -95,6 +98,8 @@ int rungame(RenderWindow& window, int level) {
     initPlatforms(platformlist, platformTexture, windowWidth);
     initFloor(floorTexture, floor, windowWidth, windowHeight); //first floor
     Clock clock;
+
+    //=====================================================================After Player Death (Marina Emad)  ====================================================================//
 
     /////// Death menu 
     Texture deathTexture;
@@ -134,7 +139,7 @@ int rungame(RenderWindow& window, int level) {
     gameOverSprite.setPosition(150, 50); // adjust for your layout
 
 
-    //game loop
+    //=======================================================================game loop=======================================================//
     bool running = true;
     while (running)
     {
@@ -196,7 +201,7 @@ int rungame(RenderWindow& window, int level) {
 
 
 
-        //Update
+        //==========================================Update=========================================================//
         if (!ispaused && !isdead) {
             playermovement(p, p.dt);
             playerphysics(p, p.dt);
@@ -220,7 +225,7 @@ int rungame(RenderWindow& window, int level) {
                 showmenu = true;
         }
 
-        //camera stuff
+        //==============================================camera stuff============================================//
         if (!ispaused && !isdead)
             camera.camera_control(p.body.getPosition().y, p.dt, speedmultiplier);
         float cameraBottom = camera.view.getCenter().y + 300.f;
@@ -242,7 +247,7 @@ int rungame(RenderWindow& window, int level) {
             }
         }
 
-        // death menu
+        //==================================================== death menu===========================================//
         if (selecteditem == 0)
         {
             playAgain.setFillColor(Color::Yellow);
@@ -253,10 +258,10 @@ int rungame(RenderWindow& window, int level) {
             playAgain.setFillColor(Color::Black);
             mainMenu.setFillColor(Color::Yellow);
         }
-        //Render
+        //===============================Render===========================//
         window.clear();
         window.setView(window.getDefaultView());
-        //draw your game 
+        //=======================================draw your game=====================================// 
         window.draw(backgroundSprite);
         window.draw(leftWall);
         window.draw(rightWall);

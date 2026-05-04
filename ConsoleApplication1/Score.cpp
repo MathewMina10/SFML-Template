@@ -4,6 +4,9 @@
 #include <iostream>
 using namespace std;
 using namespace sf;
+//=====================================================================SCORE SYSTEM (Marly Hazem)  =======================================================//
+
+             //=============================Score info====================//
 ScoreSystem::ScoreSystem()
 {
     score = 0;
@@ -15,33 +18,31 @@ ScoreSystem::ScoreSystem()
     initialized = false;
 }
 
+//=============================Score Font====================//
+
 void ScoreSystem::init()
 {
-    if (!font.loadFromFile("HalloweenSlimePersonalUse-4B80D.otf"))
-    {
-        cout << "Font Error\n";
-    }
-
-
+    font.loadFromFile("HalloweenSlimePersonalUse-4B80D.otf");
     scoreText.setFont(font);
     scoreText.setCharacterSize(40);
     scoreText.setFillColor(sf::Color::White);
-
-    initialized = false; // important
+    initialized = false;
 }
+
+//=============================Score Update====================//
 
 void ScoreSystem::update(float playerY)
 {
     combotimer += 0.016f;
 
-    // first frame
+
     if (!initialized)
     {
         lastY = playerY;
         initialized = true;
     }
 
-    // if player moved UP
+    // when the player moves up
     if (playerY < lastY)
     {
         float delta = lastY - playerY;
@@ -50,14 +51,16 @@ void ScoreSystem::update(float playerY)
 
     lastY = playerY;
 
-    // update highscore LIVE
+    // reset the highscore
     if (score > highscore)
         highscore = score;
 
     scoreText.setPosition(20.f, 20.f);
     scoreText.setString("Score: " + to_string(score) + "\nHigh Score: " + to_string(highscore) + "\nCombo: " + to_string(combo));
 }
-//combo
+
+//=============================Score Combo====================//
+
 void ScoreSystem::addcombo(int platformsPassed)
 {
     if (platformsPassed >= 2)
@@ -70,6 +73,8 @@ void ScoreSystem::addcombo(int platformsPassed)
         combo = 0;
     }
 }
+
+//=============================HighScore System====================//
 
 void ScoreSystem::loadhighscore()
 {
@@ -95,7 +100,7 @@ void ScoreSystem::draw(RenderWindow& window)
 {
     window.draw(scoreText);
 }
-//=======================================highscore===============================================//
+
 void ScoreSystem::savehighscore()
 {
     string filename = "highscore_level" + to_string(levelindex) + ".txt";
@@ -116,6 +121,10 @@ void ScoreSystem::checkAndSave()
 
     savehighscore();
 }
+
+//=============================Score Reveal====================//
+
+
 void ScoreSystem::scorereveal(Text& finalscoretext, Text& finalhighscoretext, Font& font, int score, int highScore)
 {
     scoreText.setFont(font);

@@ -1,9 +1,21 @@
 ﻿#include "player.h"
 #include "Platforms.h"
+#include "Camera.h"
 #include"Score.h"
 #include <cmath>
+#include <SFML/Graphics.hpp>
+#include<SFML/Window.hpp>
+#include<SFML/System.hpp>
+#include<SFML/Audio.hpp>
+using namespace std;
+using namespace sf;
+SoundBuffer  fallBuffer, stepBuffer, jumpBuffer, landBuffer;
+Sound jumpSound, landSound, fallSound, stepSound;
+
 anim a;
-//------------------------------------- Player -------------------------------------------------------//
+//=====================================================================Player SYSTEM and Sound (Matthew Mina && Mary Morcos)  =======================================================//
+
+                                   //=========================================Player Info============================================//
 void playerinfo(player& p) {
     p.body.setSize(Vector2f(28.f, 28.f)); //Character Size
     p.body.setFillColor(Color::Transparent);
@@ -23,31 +35,59 @@ void playerinfo(player& p) {
     p.lastplatformindex = -1;
 }
 
-//--------------------------------
+//=========================================Player Sound============================================//
+
+void loadSounds(player& p)
+{
+    jumpBuffer.loadFromFile("Assets_Sounds_jump.ogg");
+    fallBuffer.loadFromFile("Assets_Sounds_falling_sound.ogg");
+    stepBuffer.loadFromFile("Assets_Sounds_flip chr 0.ogg");
+    landBuffer.loadFromFile("Assets_Sounds_good.ogg");
+
+    jumpSound.setBuffer(jumpBuffer);
+    jumpSound.setVolume(70);
+    stepSound.setVolume(30);
+    landSound.setVolume(90); // footsteps softer
+    p.stepTimer = 0.f;
+    p.stepDelay = 0.25f;
+}
+
+//=========================================Player Movement============================================//
 
 void playermovement(player& p, float dt)
 {
+    p.stepTimer -= dt;
+
+    bool moving = false;
     if (Keyboard::isKeyPressed(Keyboard::D)) {
         p.velocity.x += p.movespeed * dt;
+        moving = true;
         a.ismoving = 1;
         p.body.setScale(1, 1);
     }
     else if (Keyboard::isKeyPressed(Keyboard::A)) {
         p.velocity.x -= p.movespeed * dt;
+        moving = true;
         a.ismoving = 1;
         p.body.setScale(-1, 1);
     }
-    else {
-        float slowdown = 1.f - (2.2f * dt);
-        if (slowdown < 0)
-            slowdown = 0;
+    if (moving && p.isonground && p.stepTimer <= 0)
+    {
+        stepSound.play();
+        p.stepTimer = p.stepDelay;
+    }
 
+    if (!moving)
+    {
+        float slowdown = 1.f - (2.2f * dt);
+        if (slowdown < 0) slowdown = 0;
         p.velocity.x *= slowdown;
     }
 
     // jump
     if (Keyboard::isKeyPressed(Keyboard::Space) && p.isonground)
     {
+        jumpSound.play();
         float speedFactor = fabs(p.velocity.x) / p.maxspeed;
         speedFactor = min(speedFactor, 1.f);
         float jumpBoost = 1.f + speedFactor * 0.8f;
@@ -62,7 +102,9 @@ void playermovement(player& p, float dt)
     }
 }
 
-//--------------------------------
+
+//========================================Game Physics============================================//
+
 
 void playerphysics(player& p, float dt)
 {
@@ -86,7 +128,8 @@ void playerphysics(player& p, float dt)
     }
 }
 
-//--------------------------------
+//=========================================Player Motion and draw============================================//
+
 
 void playermove(player& p, float dt) {
     p.body.move(p.velocity.x * dt, p.velocity.y * dt);
@@ -98,7 +141,10 @@ void playerdraw(player& p, RenderWindow& window) {
     window.draw(p.body);
 }
 
-//--------------------------------collision----------------------------------------------------//
+
+
+//=====================================================================Collision (Mary Eladham)  =======================================================//
+
 
 void collision(player& p, Platform platforms[]) {
 
@@ -157,6 +203,7 @@ void collision(player& p, Platform platforms[]) {
 
                     if (p.inair)
                     {
+                        landSound.play(); // sound
                         p.justlanded = true;
                         p.lastland = 0.f;
                     }
@@ -171,8 +218,10 @@ void collision(player& p, Platform platforms[]) {
     }
 }
 
-//===============================================Animation================================//
+//=====================================================================Animation (Mary Eladham)  ==============================================================//
 
+
+               //=========================================Animation Stuff=======================================//
 void start(anim& g) {
 
     g.idle.loadFromFile("idle.png");
@@ -194,7 +243,7 @@ void start(anim& g) {
     g.movingindix = 0;
 }
 
-//--------------------------------
+//=========================================Animation Control=======================================//
 
 void update(anim& g, player& p, float dt) {
 

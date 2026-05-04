@@ -4,12 +4,13 @@
 #include <SFML/Graphics.hpp>
 #include<SFML/Window.hpp>
 #include<SFML/System.hpp>
+//=====================================================================Camera System (Mary Morcos)  ====================================================================//
 
 void Camera::camera_stuff(float width, float height)
 {
     basespeed = 45.f;
     cameraSpeed = basespeed; // the basic camera
-    maxcameraspeed = 150.f; // the fastest camera 
+    maxcameraspeed = 170.f; // the fastest camera 
     startY = height / 2.f;
     gamestarted = false;
     view.setSize(width, height);

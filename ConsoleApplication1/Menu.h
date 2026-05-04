@@ -5,7 +5,7 @@ using namespace std;
 using namespace sf;
 struct Menu
 {
-private:
+
     // ================= BACKGROUND =================
     sf::Texture bgTexture;
     sf::Sprite bg;
@@ -18,6 +18,11 @@ private:
     sf::Text instructionsText;
     sf::Texture instructionsTexture;
     sf::Sprite instructionsSprite;
+    // ================= CREDITS =================
+    sf::Texture creditsTexture;
+    sf::Sprite creditsSprite;
+    bool showCredits;
+    bool isCreditsOpen();
     // ================= STATE =================
     int selectedItem;
     bool showInstructions;
@@ -41,9 +46,9 @@ private:
     float navDelay = 190.f;
     float valueDelay = 190.f;
     //bar
-    sf::RectangleShape soundBar;
-    sf::RectangleShape musicBar;
-public:
+    RectangleShape soundBar;
+    RectangleShape musicBar;
+
     float windowWidth = 800.0f;
     float windowHeight = 600.0f;
     // ================= CONSTRUCTOR =================
