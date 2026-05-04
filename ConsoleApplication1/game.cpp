@@ -14,13 +14,57 @@ using namespace sf;
 const int back_to_menu = 0;
 const int restart = 1;
 int selecteditem = 0;
-int rungame(RenderWindow& window) {
+Text finalscoretext;
+Text finalhighscoretext;
+float deathtimer = 0.f;
+bool showmenu = false;
+player p;
+float speedmultiplier = 1.f;
+int rungame(RenderWindow& window, int level) {
+    Texture backgroundTexture;
+    Texture platformTexture;
+    Texture wallTexture;
+    Texture floorTexture;
+    if (level == 0) //easy
+    {
+        backgroundTexture.loadFromFile("BackGround game1.png");
+        platformTexture.loadFromFile("Stair (3).png");
+        wallTexture.loadFromFile("wall11.png");
+        floorTexture.loadFromFile("floor.png");
+        speedmultiplier = 1.f;
+    }
+    else if (level == 1) //medium
+    {
+        backgroundTexture.loadFromFile("frozen.jpg");
+        platformTexture.loadFromFile("Stair3.png");
+        wallTexture.loadFromFile("wall2.png");
+        floorTexture.loadFromFile("floor3.png");
+        p.movespeed *= 1.2f;
+        p.maxspeed *= 1.2f;
+        p.jumppower *= 1.05f;
+        speedmultiplier = 1.6f;
+
+    }
+    else if (level == 2) //Hard
+    {
+        backgroundTexture.loadFromFile("images (2).jpg");
+        platformTexture.loadFromFile("Stair2 (1).png");
+        wallTexture.loadFromFile("Stair2 (1).jpg");
+        floorTexture.loadFromFile("floor2.png");
+        p.movespeed *= 1.4f;
+        p.maxspeed *= 1.3f;
+        p.jumppower *= 1.1f;
+        p.gravity *= 1.2f;
+        speedmultiplier = 2.f;
+    }
     bool ispaused = false;
     bool isdead = false;
     const float windowWidth = 800;
     const float windowHeight = 600;
     //score
     ScoreSystem score;
+    score.levelindex = level;
+    score.loadhighscore();
     score.init();
     RenderTexture blurtexture;
     blurtexture.create(windowWidth, windowHeight); // blur for pause menu
@@ -39,16 +83,14 @@ int rungame(RenderWindow& window) {
     playerinfo(p);
 
     // background
-    Texture backgroundTexture, wallTexture, floorTexture, platformTexture;
     Sprite backgroundSprite, leftWall, rightWall, floor;
-    initBackground(backgroundTexture, backgroundSprite, windowWidth);
+    initBackground(backgroundTexture, backgroundSprite, windowWidth, level);
 
     //walls
     initWalls(wallTexture, leftWall, rightWall, windowWidth, windowHeight);
 
 
     //platforms 
-    const int PLATFORM_COUNT = 200;
     Platform platformlist[PLATFORM_COUNT];
     initPlatforms(platformlist, platformTexture, windowWidth);
     initFloor(floorTexture, floor, windowWidth, windowHeight); //first floor
@@ -82,6 +124,14 @@ int rungame(RenderWindow& window) {
     gameMusic.openFromFile("backgmusic.ogg"); //game music
     gameMusic.play();
     gameMusic.setLoop(true);
+
+
+    //===========================================game over texture======================================================//
+    Texture gameOverTexture;
+    gameOverTexture.loadFromFile("gameover.png");
+    Sprite gameOverSprite;
+    gameOverSprite.setTexture(gameOverTexture);
+    gameOverSprite.setPosition(150, 50); // adjust for your layout
 
 
     //game loop
@@ -162,18 +212,33 @@ int rungame(RenderWindow& window) {
             score.update(p.body.getPosition().y);
 
         }
+        if (isdead && !showmenu)
+        {
+            deathtimer += p.dt;
 
-        //Platforms 
+            if (deathtimer >= 2.f)
+                showmenu = true;
+        }
 
         //camera stuff
         if (!ispaused && !isdead)
-            camera.camera_control(p.body.getPosition().y, p.dt);
+            camera.camera_control(p.body.getPosition().y, p.dt, speedmultiplier);
         float cameraBottom = camera.view.getCenter().y + 300.f;
         if (!ispaused && !isdead) {
             if (p.body.getPosition().y > cameraBottom + 50.f)
             {
-                isdead = true; // the game is over
+                isdead = true; //the game is over
                 selecteditem = 0;
+
+                deathtimer = 0.f;
+                showmenu = false;
+
+                if (score.score > score.highscore)
+                    score.highscore = score.score;
+
+                score.savehighscore();
+
+                score.scorereveal(finalscoretext, finalhighscoretext, font, score.score, score.highscore);
             }
         }
 
@@ -260,9 +325,15 @@ int rungame(RenderWindow& window) {
         if (isdead)
         {
             window.setView(window.getDefaultView());
-            window.draw(deathSprite);
-            window.draw(playAgain);
-            window.draw(mainMenu);
+            window.draw(gameOverSprite);
+            window.draw(finalscoretext);
+            window.draw(finalhighscoretext);
+            if (showmenu)
+            {
+                window.draw(deathSprite);
+                window.draw(playAgain);
+                window.draw(mainMenu);
+            }
         }
         //////score draw
         window.setView(window.getDefaultView());

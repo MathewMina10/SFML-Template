@@ -14,7 +14,7 @@ struct Platform
 	bool counted = false; // for platforms that passed 
 };
 //-------------------------------------------------------  FUNCTIONS------------------------------------------------------------// 
-void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth);
+void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth, int level);
 void initWalls(Texture& wallTexture, Sprite& leftWall, Sprite& rightWall, float windowWidth, float windowHeight);
 void initFloor(Texture& floorTexture, Sprite& floor, float windowWidth, float windowHeight);
 void initPlatforms(Platform platforms[], Texture& platformTexture, float windowW);

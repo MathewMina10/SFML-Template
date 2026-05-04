@@ -12,7 +12,7 @@ void playerinfo(player& p) {
     p.body.setPosition(390.f, 540.f);
     p.velocity = Vector2f(0.f, 0.f);
     p.gravity = 2600.f;
-    p.movespeed = 2900.f;
+    p.movespeed = 2600.f;
     p.jumppower = -700.f;
     p.maxspeed = 700.f;
     p.friction = 0.90f;
@@ -20,6 +20,7 @@ void playerinfo(player& p) {
     p.jumphold = false;
     p.inair = true;
     p.platformspassed = 0;
+    p.lastplatformindex = -1;
 }
 
 //--------------------------------
@@ -38,7 +39,8 @@ void playermovement(player& p, float dt)
     }
     else {
         float slowdown = 1.f - (2.2f * dt);
-        if (slowdown < 0) slowdown = 0;
+        if (slowdown < 0)
+            slowdown = 0;
 
         p.velocity.x *= slowdown;
     }
@@ -77,6 +79,10 @@ void playerphysics(player& p, float dt)
     if (!p.isonground)
     {
         p.inair = true;
+    }
+    if (p.velocity.y > 0 && !p.isonground)
+    {
+        p.lastplatformindex = -1;
     }
 }
 
@@ -142,25 +148,30 @@ void collision(player& p, Platform platforms[]) {
 
             if (feet.intersects(plat))
             {
-                p.body.setPosition(p.body.getPosition().x, plat.top - playerH + 1.f);
-
-                p.velocity.y = 0;
-                p.isonground = true;
-
-                if (p.inair)
+                if (i != p.lastplatformindex)
                 {
-                    p.justlanded = true;
-                    p.lastland = 0.f;
-                }
+                    p.body.setPosition(p.body.getPosition().x, plat.top - playerH + 1.f);
 
-                p.inair = false;
-                break;
+                    p.velocity.y = 0;
+                    p.isonground = true;
+
+                    if (p.inair)
+                    {
+                        p.justlanded = true;
+                        p.lastland = 0.f;
+                    }
+
+                    p.inair = false;
+
+                    p.lastplatformindex = i;
+                    break;
+                }
             }
         }
     }
 }
 
-//--------------------------------Animation---------------------------------------------------//
+//===============================================Animation================================//
 
 void start(anim& g) {
 

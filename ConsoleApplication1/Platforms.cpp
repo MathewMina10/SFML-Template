@@ -13,21 +13,38 @@
 using namespace std;
 using namespace sf;
 //---------------------------------  BACKGROUND-------------------------------------------------// 
-void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth)
+void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth, int level)
 {
-    backgroundTexture.loadFromFile("BackGround game1.png");
-    backgroundTexture.setRepeated(true);
     backgroundTexture.setSmooth(false);
 
     backgroundSprite.setTexture(backgroundTexture);
-    backgroundSprite.setTextureRect(IntRect(0, 0, windowWidth, 8000));
 
-    backgroundSprite.setScale(windowWidth / backgroundTexture.getSize().x, 1.0f);
+    //  LEVEL 1 ( REPEAT) 
+    if (level == 0)
+    {
+        backgroundTexture.setRepeated(true);
+
+        backgroundSprite.setTextureRect(IntRect(0, 0, windowWidth, 8000));
+
+        float scaleX = windowWidth / backgroundTexture.getSize().x;
+        backgroundSprite.setScale(scaleX, 1.0f);
+    }
+
+    //  LEVEL 2 & 3 (JPG - SINGLE IMAGE)
+    else
+    {
+        backgroundTexture.setRepeated(false);
+
+        backgroundSprite.setTextureRect(IntRect(0, 0, backgroundTexture.getSize().x,
+            backgroundTexture.getSize().y));
+
+        backgroundSprite.setScale(windowWidth / backgroundTexture.getSize().x,
+            600.f / backgroundTexture.getSize().y);
+    }
 }
-//------------------------------------------------  WALLS ------------------------------------------//
+//-----------------------------------  WALLS ------------------------------------------//
 void initWalls(Texture& wallTexture, Sprite& leftWall, Sprite& rightWall, float windowWidth, float windowHeight)
 {
-    wallTexture.loadFromFile("wall11.png");
     wallTexture.setRepeated(true);
     wallTexture.setSmooth(false);
 
@@ -50,7 +67,6 @@ void initWalls(Texture& wallTexture, Sprite& leftWall, Sprite& rightWall, float 
 //---------------------------------------------  FLOOR -----------------------------------------------------------// 
 void initFloor(Texture& floorTexture, Sprite& floor, float windowWidth, float windowHeight)
 {
-    floorTexture.loadFromFile("floor.png");
     floor.setTexture(floorTexture);
 
     float wallWidth = 90.0f;
@@ -65,7 +81,6 @@ void initFloor(Texture& floorTexture, Sprite& floor, float windowWidth, float wi
 //------------------------------------------------  PLATFORMS---------------------------------------------------------//
 void initPlatforms(Platform platforms[], Texture& platformTexture, float windowW)
 {
-    platformTexture.loadFromFile("Stair (3).png");
 
     float wallWidth = 90.0f;
     float playableWidth = windowW - 2 * wallWidth;

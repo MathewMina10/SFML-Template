@@ -2,11 +2,11 @@
 #include <SFML/Graphics.hpp>
 using namespace std;
 using namespace sf;
-class ScoreSystem
+struct ScoreSystem
 {
-private:
     int score;
     int combo;
+    int levelindex;
     int highscore;
     float combotimer;
     float combomaxtime;
@@ -14,16 +14,17 @@ private:
     Text scoreText;
     float beginY;
     float restY;
+    float lastY;
     bool initialized;
-
-public:
+    Text finalscoretext;
+    Text finalhighscoretext;
     ScoreSystem();
-
     void init();
     void update(float playerY);
     void draw(RenderWindow& window);
     void addcombo(int platformspassed);
     void loadhighscore();
     void savehighscore();
-    void updatehighscore();
+    void checkAndSave();
+    void scorereveal(Text& finalscoretext, Text& finalhighscoretext, Font& font, int score, int highScore);
 };
