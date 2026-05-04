@@ -10,6 +10,7 @@
 #include "Platforms.h"
 #include "Camera.h"
 #include "game.h"
+//=====================================================================Main Menu (Mariham Merzek)  ====================================================================//
 
 using namespace sf;
 using namespace std;
@@ -23,9 +24,7 @@ sf::Music bgMusic;
 
 int main()
 {
-    RenderWindow window(VideoMode(windowWidth, windowHeight),
-        "Icy Tower",
-        Style::Titlebar | Style::Close | Style::Resize);
+    RenderWindow window(VideoMode(windowWidth, windowHeight), "Icy Tower", Style::Titlebar | Style::Close | Style::Resize);
 
     window.setKeyRepeatEnabled(false);
 
@@ -197,10 +196,7 @@ int main()
                 currentFrame = (currentFrame + 1) % totalFrames;
 
                 sprite.setTextureRect(IntRect(
-                    currentFrame * (int)frameWidth,
-                    0,
-                    (int)frameWidth,
-                    (int)frameHeight));
+                    currentFrame * (int)frameWidth, 0, (int)frameWidth, (int)frameHeight));
 
                 animationClock.restart();
             }
@@ -213,7 +209,7 @@ int main()
         {
             menu.draw(window);
 
-            if (!menu.isInstructionsOpen() && !menu.isOptionsOpen())
+            if (!menu.isInstructionsOpen() && !menu.isOptionsOpen() && !menu.isCreditsOpen())
             {
                 window.draw(sprite);
             }

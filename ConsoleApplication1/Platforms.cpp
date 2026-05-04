@@ -12,14 +12,18 @@
 #include<algorithm>
 using namespace std;
 using namespace sf;
-//---------------------------------  BACKGROUND-------------------------------------------------// 
+//=====================================================================Graphics System (Karen Sherif)=======================================================//
+
+
+
+          //=========================================Background============================//
 void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float windowWidth, int level)
 {
     backgroundTexture.setSmooth(false);
 
     backgroundSprite.setTexture(backgroundTexture);
 
-    //  LEVEL 1 ( REPEAT) 
+    //===================================== LEVEL 1 ( REPEAT) =====================================//
     if (level == 0)
     {
         backgroundTexture.setRepeated(true);
@@ -30,7 +34,7 @@ void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float 
         backgroundSprite.setScale(scaleX, 1.0f);
     }
 
-    //  LEVEL 2 & 3 (JPG - SINGLE IMAGE)
+    //========================================  LEVEL 2 & 3 (JPG - SINGLE IMAGE)=====================================//
     else
     {
         backgroundTexture.setRepeated(false);
@@ -42,7 +46,9 @@ void initBackground(Texture& backgroundTexture, Sprite& backgroundSprite, float 
             600.f / backgroundTexture.getSize().y);
     }
 }
-//-----------------------------------  WALLS ------------------------------------------//
+
+//==========================================  WALLS=========================================//
+
 void initWalls(Texture& wallTexture, Sprite& leftWall, Sprite& rightWall, float windowWidth, float windowHeight)
 {
     wallTexture.setRepeated(true);
@@ -64,7 +70,9 @@ void initWalls(Texture& wallTexture, Sprite& leftWall, Sprite& rightWall, float 
     rightWall.setPosition(windowWidth - wallWidth, 0);
 }
 
-//---------------------------------------------  FLOOR -----------------------------------------------------------// 
+
+//=====================================================FLOOR====================================================// 
+
 void initFloor(Texture& floorTexture, Sprite& floor, float windowWidth, float windowHeight)
 {
     floor.setTexture(floorTexture);
@@ -78,7 +86,9 @@ void initFloor(Texture& floorTexture, Sprite& floor, float windowWidth, float wi
     float floorHeight = floor.getGlobalBounds().height;
     floor.setPosition(wallWidth, windowHeight - floorHeight);
 }
-//------------------------------------------------  PLATFORMS---------------------------------------------------------//
+
+//=========================================PLATFORMS=========================================//
+
 void initPlatforms(Platform platforms[], Texture& platformTexture, float windowW)
 {
 

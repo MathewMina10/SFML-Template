@@ -4,8 +4,13 @@
 #include <SFML/Graphics.hpp>
 #include<SFML/Window.hpp>
 #include<SFML/System.hpp>
+#include "Camera.h"
 using namespace std;
 using namespace sf;
+
+//=====================================================================Player=======================================================//
+
+
 struct Platform;
 struct player
 {
@@ -23,9 +28,12 @@ struct player
     bool jumphold;
     bool gamestarted;
     bool inair;
+    bool fallPlayed = false;
     float dt;
-    float maxspeed = 0;
-    float friction = 0;
+    float maxspeed;
+    float friction;
+    float stepTimer;
+    float stepDelay;
 };
 void playerinfo(player& player);
 void playermovement(player& player, float dt);
@@ -33,8 +41,11 @@ void playerphysics(player& player, float dt);
 void playermove(player& player, float dt);
 void playerdraw(player& player, RenderWindow& window);
 void collision(player& p, Platform platformlist[]);
+void loadSounds(player& p); // sound
 
-//--------------------------------------------------Animation--------------------------------------//
+
+//=====================================================================Animation=======================================================//
+
 
 struct anim {
     Sprite mary;

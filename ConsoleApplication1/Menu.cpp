@@ -3,6 +3,8 @@
 #include <string>
 using namespace std;
 using namespace sf;
+//=====================================================================Main Menu (Mariham Merzek)  ====================================================================//
+
 Menu::Menu(float width, float height)
 {
     backToMenu = false;
@@ -39,10 +41,18 @@ Menu::Menu(float width, float height)
     // ================= INSTRUCTIONS =================
     instructionsTexture.loadFromFile("instructions.png");
     instructionsSprite.setTexture(instructionsTexture);
-
     float scalek = windowWidth / instructionsTexture.getSize().x;
     float scalez = windowHeight / instructionsTexture.getSize().y;
     instructionsSprite.setScale(scalek, scalez);
+
+    //====================credits==============
+    showCredits = false;
+    creditsTexture.loadFromFile("Credits.Jpeg");
+    creditsSprite.setTexture(creditsTexture);
+
+    float scaleCX = windowWidth / creditsTexture.getSize().x;
+    float scaleCY = windowHeight / creditsTexture.getSize().y;
+    creditsSprite.setScale(scaleCX, scaleCY);
 
     // ================= SOUND =================
     clickBuffer.loadFromFile("menu_change.ogg");
@@ -65,20 +75,6 @@ Menu::Menu(float width, float height)
     }
 
     menu[0].setFillColor(sf::Color::Yellow);
-
-    // ================= INSTRUCTIONS TEXT =================
-    instructionsText.setFont(font);
-    instructionsText.setCharacterSize(24);
-    instructionsText.setFillColor(sf::Color::Black);
-    instructionsText.setPosition(50, 50);
-
-    instructionsText.setString(
-        "Instructions:\n\n"
-        "- Use UP and DOWN to move\n"
-        "- Press ENTER to select\n"
-        "- Reach the highest score!\n\n"
-        "Press ESC to go back"
-    );
 
     // ================= OPTIONS =================
     std::string opt[3] = { "Sound", "Music", "Back" };
@@ -115,7 +111,10 @@ void Menu::draw(sf::RenderWindow& window)
         window.draw(soundBar);
         window.draw(musicBar);
     }
-
+    else if (showCredits)
+    {
+        window.draw(creditsSprite);
+    }
     else
     {
         for (int i = 0; i < 5; i++)
@@ -134,7 +133,7 @@ void Menu::MoveUp()
 {
     if (showInstructions || showOptions) return;
 
-    // ⛔ منع السرعة الزايدة
+
     if (moveClock.getElapsedTime().asMilliseconds() < moveDelay)
         return;
 
@@ -151,8 +150,6 @@ void Menu::MoveUp()
 void Menu::MoveDown()
 {
     if (showInstructions || showOptions) return;
-
-    // ⛔ منع السرعة الزايدة
     if (moveClock.getElapsedTime().asMilliseconds() < moveDelay)
         return;
 
@@ -256,6 +253,10 @@ void Menu::HandleInput(sf::Event& event)
         if (selectedItem == 0) playSelected = true;
         else if (selectedItem == 1) openInstructions();
         else if (selectedItem == 2) openOptions();
+        else if (selectedItem == 3)
+        {
+            showCredits = true;
+        }
         else if (selectedItem == 4) exitSelected = true;
         clickSound.play();
     }
@@ -265,6 +266,9 @@ void Menu::HandleInput(sf::Event& event)
             closeInstructions();
         else if (showOptions)
             closeOptions();
+        {
+            showCredits = false;
+        }
     }
 }
 
@@ -276,6 +280,10 @@ void Menu::openOptions() { showOptions = true; }
 void Menu::closeOptions() {
     showOptions = false;
     selectedOption = 0;
+}
+bool Menu::isCreditsOpen()
+{
+    return showCredits;
 }
 bool Menu::shouldExit()
 {
